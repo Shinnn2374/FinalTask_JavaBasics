@@ -1,13 +1,15 @@
 package main.controllers;
 
 import main.services.*;
-import org.json.simple.JSONObject;
+import main.services.result.SearchResultEntityOffseter;
+import main.services.search.SearchServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -27,20 +29,20 @@ public class SearchController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<JSONObject> search(@RequestParam String query, @RequestParam(required = false)  String site, @RequestParam int offset, @RequestParam int limit) {
+    public ResponseEntity<? extends Map> search(@RequestParam String query, @RequestParam(required = false)  String site, @RequestParam int offset, @RequestParam int limit) {
         if (query == null || query.isEmpty()){
             return responseEntityLoader.getEmptySearchQueryResponse();
         }
 
         if(site != null && !site.isEmpty()){
-            ResponseEntity<JSONObject> siteResultJson = searchServices.getMatchesInSite(site, query);
+            ResponseEntity<Map<String, Object>> siteResultJson = searchServices.getMatchesInSite(site, query);
             if(!Objects.requireNonNull(siteResultJson.getBody()).containsKey("data")){
                 return siteResultJson;
             } else {
                 return searchResultEntityOffseter.loadEntityWithOffset(limit, offset, siteResultJson);
             }
         }
-        ResponseEntity<JSONObject> sitesResultJson = searchServices.getMatchesInSites(query);
+        ResponseEntity<Map<String, Object>> sitesResultJson = searchServices.getMatchesInSites(query);
         if(!Objects.requireNonNull(sitesResultJson.getBody()).containsKey("data")){
             return sitesResultJson;
         } else {

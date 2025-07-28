@@ -1,173 +1,119 @@
 package main.services;
 
-
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import main.data.model.Site;
 import main.data.model.Status;
 import main.data.repository.SiteRepository;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Slf4j
 @Component
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 public class ResponseEntityLoader {
 
-    SiteRepository siteRepository;
+    private final SiteRepository siteRepository;
+    private final Map<String, ResponseEntity<Map<String, Object>>> responseCache = new ConcurrentHashMap<>();
 
     @Autowired
     public ResponseEntityLoader(SiteRepository siteRepository) {
         this.siteRepository = siteRepository;
+        initializeResponseCache();
     }
 
-    public ResponseEntity<JSONObject> getIndexingAlreadyStartResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Индексация уже запущена\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.FORBIDDEN);
+    private void initializeResponseCache() {
+        // Статические ответы
+        responseCache.put("indexingAlreadyStarted", createResponse(false, "Индексация уже запущена", HttpStatus.FORBIDDEN));
+        responseCache.put("controllerMethodStart", createResponse(true, null, HttpStatus.OK));
+        responseCache.put("indexingNotStarted", createResponse(false, "Индексация не запущена", HttpStatus.FORBIDDEN));
+        responseCache.put("pageOutOfRange", createResponse(false, "Данная страница находится за пределами сайтов, указанных в конфигурационном файле", HttpStatus.NOT_FOUND));
+        responseCache.put("emptySearchQuery", createResponse(false, "Отсутствует поисковый запрос", HttpStatus.NOT_FOUND));
+        responseCache.put("siteNotFound", createResponse(false, "Запрашиваемый сайт отсутствует в базе данных", HttpStatus.NOT_FOUND));
+        responseCache.put("indexedSitesNotFound", createResponse(false, "Отсутствуют проиндексированные сайты", HttpStatus.NOT_FOUND));
+        responseCache.put("searchMatchesNotFound", createResponse(false, "Отсутствуют совпадения", HttpStatus.NOT_FOUND));
+        responseCache.put("relevantPagesNotFound", createResponse(false, "Отсутствует вывод найденных совпадений", HttpStatus.NOT_FOUND));
     }
 
-    public ResponseEntity<JSONObject> getControllerMethodStartResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": true\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    private ResponseEntity<Map<String, Object>> createResponse(boolean result, String error, HttpStatus status) {
+        return new ResponseEntity<>(Map.of(
+                "result", result,
+                "error", error != null ? error : ""
+        ), status);
     }
 
-    public ResponseEntity<JSONObject> getIndexingNotStartResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Индексация не запущена\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.FORBIDDEN);
+    public ResponseEntity<Map<String, Object>> getIndexingAlreadyStartResponse() {
+        return responseCache.get("indexingAlreadyStarted");
     }
 
-    public ResponseEntity<JSONObject> getPageOutOfRangeResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Данная страница находится за пределами сайтов,указанных в конфигурационном файле\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getControllerMethodStartResponse() {
+        return responseCache.get("controllerMethodStart");
     }
 
-    public ResponseEntity<JSONObject> getEmptySearchQueryResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Отсутствует поисковый запрос\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getIndexingNotStartResponse() {
+        return responseCache.get("indexingNotStarted");
     }
 
-    public ResponseEntity<JSONObject> getSiteNotFoundResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт отсутсвует в базе данных\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getPageOutOfRangeResponse() {
+        return responseCache.get("pageOutOfRange");
     }
 
-    public ResponseEntity<JSONObject> getIndexedSitesNotFoundResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Отсутсвуют проиндексированные сайты\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getEmptySearchQueryResponse() {
+        return responseCache.get("emptySearchQuery");
     }
 
-    public ResponseEntity<JSONObject> getSearchMatchesNotFoundResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Отсутсвуют совпадения\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getSiteNotFoundResponse() {
+        return responseCache.get("siteNotFound");
     }
 
-    public ResponseEntity<JSONObject> getRelevantPagesNotFoundResponse(){
-        JSONParser parser = new JSONParser();
-        JSONObject result = new JSONObject();
-
-        try {
-            result = (JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Отсутсвует вывод найденных совпадений\"\n}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, Object>> getIndexedSitesNotFoundResponse() {
+        return responseCache.get("indexedSitesNotFound");
     }
 
-
-    public ResponseEntity<JSONObject> getSiteIndexingOrEmptyPagesResponse(Site targetSite){
-        JSONParser parser = new JSONParser();
-        ResponseEntity<JSONObject> resultJson = null;
-        try {
-            resultJson = siteRepository.findById(targetSite.getId()).get().getStatus().compareTo(Status.INDEXING) == 0 ?
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт индексируется, попробуйте позже\"\n}"), HttpStatus.FORBIDDEN) :
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт не имеет страниц в базе данных\"\n}"), HttpStatus.NOT_FOUND);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return resultJson;
+    public ResponseEntity<Map<String, Object>> getSearchMatchesNotFoundResponse() {
+        return responseCache.get("searchMatchesNotFound");
     }
 
-    public ResponseEntity<JSONObject> getSiteIndexingOrEmptyLemmasResponse(Site targetSite){
-        JSONParser parser = new JSONParser();
-        ResponseEntity<JSONObject> resultJson = null;
-        try {
-            resultJson = siteRepository.findById(targetSite.getId()).get().getStatus().compareTo(Status.INDEXING) == 0 ?
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт индексируется, попробуйте позже\"\n}"), HttpStatus.FORBIDDEN) :
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт не имеет лемм в базе данных\"\n}"), HttpStatus.NOT_FOUND);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return resultJson;
+    public ResponseEntity<Map<String, Object>> getRelevantPagesNotFoundResponse() {
+        return responseCache.get("relevantPagesNotFound");
     }
 
-    public ResponseEntity<JSONObject> getSiteIndexingOrEmptyIndexesResponse(Site targetSite){
-        JSONParser parser = new JSONParser();
-        ResponseEntity<JSONObject> resultJson = null;
-        try {
-            resultJson = siteRepository.findById(targetSite.getId()).get().getStatus().compareTo(Status.INDEXING) == 0 ?
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт индексируется, попробуйте позже\"\n}"), HttpStatus.FORBIDDEN) :
-                    new ResponseEntity<> ((JSONObject) parser.parse("{\n\"result\": false,\n\"error\": \"Запрашиваемый сайт не имеет индексов в базе данных\"\n}"), HttpStatus.NOT_FOUND);
-        } catch (ParseException e) {
-            e.printStackTrace();
+    // Методы с динамической логикой
+    public ResponseEntity<Map<String, Object>> getSiteIndexingOrEmptyPagesResponse(Site targetSite) {
+        Site site = siteRepository.findById(targetSite.getId()).orElse(null);
+        if (site == null) {
+            return responseCache.get("siteNotFound");
         }
-        return resultJson;
+
+        return site.getStatus() == Status.INDEXING ?
+                responseCache.get("indexingAlreadyStarted") :
+                createResponse(false, "Запрашиваемый сайт не имеет страниц в базе данных", HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<Map<String, Object>> getSiteIndexingOrEmptyLemmasResponse(Site targetSite) {
+        Site site = siteRepository.findById(targetSite.getId()).orElse(null);
+        if (site == null) {
+            return responseCache.get("siteNotFound");
+        }
+
+        return site.getStatus() == Status.INDEXING ?
+                responseCache.get("indexingAlreadyStarted") :
+                createResponse(false, "Запрашиваемый сайт не имеет лемм в базе данных", HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<Map<String, Object>> getSiteIndexingOrEmptyIndexesResponse(Site targetSite) {
+        Site site = siteRepository.findById(targetSite.getId()).orElse(null);
+        if (site == null) {
+            return responseCache.get("siteNotFound");
+        }
+
+        return site.getStatus() == Status.INDEXING ?
+                responseCache.get("indexingAlreadyStarted") :
+                createResponse(false, "Запрашиваемый сайт не имеет индексов в базе данных", HttpStatus.NOT_FOUND);
     }
 }

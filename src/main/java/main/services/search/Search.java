@@ -1,7 +1,10 @@
-package main.services;
+package main.services.search;
 
 import main.data.model.Index;
 import main.data.model.Lemma;
+import main.services.index.IndexLoader;
+import main.services.lemma.LemmFactory;
+import main.services.lemma.LemmaSortByFreqAndName;
 
 import java.util.*;
 public class Search {

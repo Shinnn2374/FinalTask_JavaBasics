@@ -1,12 +1,12 @@
-package main.services;
+package main.services.site;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.IOException;
 
-
+@Slf4j
 public class SiteConnector {
 
     private Connection.Response cachedResource;
@@ -24,7 +24,7 @@ public class SiteConnector {
            cachedResource = Jsoup.connect(siteUrl).userAgent(userAgent).referrer("http://www.google.com").ignoreHttpErrors(true).maxBodySize(0).execute();
            Thread.sleep(650);
         } catch (Exception exception ) {
-            exception.printStackTrace();
+            log.info("Could not connect to site at " + siteUrl, exception);
         }
     }
 
@@ -39,7 +39,7 @@ public class SiteConnector {
                 stat = this.cachedResource.statusCode();
             }
         } catch (Exception ex){
-            ex.printStackTrace();
+            log.info("Could not connect to site at " + siteUrl, ex);
         }
         return stat;
     }
@@ -52,7 +52,7 @@ public class SiteConnector {
         try {
             result = this.cachedResource.parse();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Could not connect to site at " + siteUrl, exception);
         }
         return result;
     }

@@ -1,15 +1,16 @@
 package main.services;
 
+import lombok.extern.slf4j.Slf4j;
 import main.data.model.Lemma;
 import main.data.model.Page;
 import main.data.model.Site;
 import main.data.repository.LemmaRepository;
 import main.data.repository.PageRepository;
 import main.data.repository.SiteRepository;
+import main.services.site.SiteStatusChecker;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,16 +18,17 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+@Slf4j
 @Component
 public class StatisticControllerEntityLoader {
 
-    final
+    private final
     SiteStatusChecker siteStatusChecker;
-    final
+    private final
     SiteRepository siteRepository;
-    final
+    private final
     PageRepository pageRepository;
-    final
+    private final
     LemmaRepository lemmaRepository;
 
     public StatisticControllerEntityLoader(SiteStatusChecker siteStatusChecker, SiteRepository siteRepository, PageRepository pageRepository, LemmaRepository lemmaRepository) {
@@ -100,7 +102,7 @@ public class StatisticControllerEntityLoader {
         try {
             resultJson = new ResponseEntity<> ((JSONObject) parser.parse(result.toString()), HttpStatus.OK);
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.info("Could not parse JSON result", e);
         }
         return resultJson;
     }

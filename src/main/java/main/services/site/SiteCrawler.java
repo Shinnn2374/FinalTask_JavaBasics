@@ -1,4 +1,4 @@
-package main.services;
+package main.services.site;
 
 
 import main.data.model.Page;

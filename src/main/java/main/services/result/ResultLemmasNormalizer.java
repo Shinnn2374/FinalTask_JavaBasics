@@ -1,4 +1,4 @@
-package main.services;
+package main.services.result;
 
 import lombok.Getter;
 import main.data.model.Lemma;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class ResultLemmasNormalizer {
 
     @Getter
-    HashMap<String, Lemma> lemmaNormalizedResult;
+    private HashMap<String, Lemma> lemmaNormalizedResult;
 
     public ResultLemmasNormalizer(HashMap<String, Lemma> resultLemmas, HashMap<String, Lemma> lemmasFromDb) {
         this.lemmaNormalizedResult = setNormalizedLemmas(resultLemmas, lemmasFromDb);

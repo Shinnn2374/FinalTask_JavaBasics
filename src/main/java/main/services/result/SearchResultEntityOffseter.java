@@ -1,6 +1,7 @@
-package main.services;
+package main.services.result;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -8,13 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @NoArgsConstructor
 public class SearchResultEntityOffseter {
 
-    public ResponseEntity<JSONObject> loadEntityWithOffset(int limit, int offset, ResponseEntity<JSONObject> result){
+    public ResponseEntity<JSONObject> loadEntityWithOffset(int limit, int offset, ResponseEntity<Map<String, Object>> result){
         int foundPagesSize = Integer.parseInt(Objects.requireNonNull(result.getBody()).get("count").toString());
         int pageLimit = (limit == 0 ? 20 + offset : limit + offset);
         if(pageLimit > foundPagesSize){
@@ -42,7 +45,7 @@ public class SearchResultEntityOffseter {
         try {
             resultJson = (JSONObject) parser.parse(offsetResult.toString());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.info("Could not parse JSON result", e);
         }
         return new ResponseEntity<>(resultJson, HttpStatus.OK);
     }

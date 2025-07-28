@@ -1,4 +1,4 @@
-package main.services;
+package main.services.index;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Page;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class IndexingPageClone {
 
-    PageRepository pageRepository;
+    private PageRepository pageRepository;
 
     @Autowired
     public IndexingPageClone(PageRepository pageRepository) {

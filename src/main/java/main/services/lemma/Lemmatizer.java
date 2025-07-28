@@ -1,4 +1,4 @@
-package main.services;
+package main.services.lemma;
 
 import lombok.AllArgsConstructor;
 import main.data.model.Field;

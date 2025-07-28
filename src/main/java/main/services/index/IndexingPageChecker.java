@@ -1,4 +1,4 @@
-package main.services;
+package main.services.index;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Site;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class IndexingPageChecker {
 
-    SiteRepository siteRepository;
+    private SiteRepository siteRepository;
 
     @Autowired
     public IndexingPageChecker(SiteRepository siteRepository) {

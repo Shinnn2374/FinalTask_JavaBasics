@@ -1,4 +1,4 @@
-package main.services;
+package main.services.db;
 
 import lombok.NoArgsConstructor;
 import main.data.model.StartParamList;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 @NoArgsConstructor
 public class DBParamLoader {
-    SiteRepository siteRepository;
-    FieldRepository fieldRepository;
-    StartParamList startParamList;
+    private SiteRepository siteRepository;
+    private FieldRepository fieldRepository;
+    private StartParamList startParamList;
 
     @Autowired
     public DBParamLoader(SiteRepository siteRepository, FieldRepository fieldRepository, StartParamList startParamList) {

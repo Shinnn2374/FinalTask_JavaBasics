@@ -1,4 +1,4 @@
-package main.services;
+package main.services.search;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Index;
@@ -7,25 +7,33 @@ import main.data.model.Page;
 import main.data.model.Site;
 import main.data.repository.PageRepository;
 import main.data.repository.SiteRepository;
-import org.json.simple.JSONObject;
+import main.services.ResponseEntityLoader;
+import main.services.index.IndexLoader;
+import main.services.lemma.LemmasLoader;
+import main.services.page.PageLoader;
+import main.services.page.RelevantPageLoader;
+import main.services.result.SearchResultEntityLoader;
+import main.services.site.SiteConditionsChanger;
+import main.services.site.SiteStatusChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @NoArgsConstructor
 public class SearchServices {
-    SiteRepository siteRepository;
-    PageRepository pageRepository;
-    ResponseEntityLoader responseEntityLoader;
-    SiteConditionsChanger siteConditionsChanger;
-    SiteStatusChecker siteStatusChecker;
-    IndexLoader indexLoader;
-    LemmasLoader lemmasLoader;
-    PageLoader pageLoader;
+    private SiteRepository siteRepository;
+    private  PageRepository pageRepository;
+    private ResponseEntityLoader responseEntityLoader;
+    private SiteConditionsChanger siteConditionsChanger;
+    private SiteStatusChecker siteStatusChecker;
+    private IndexLoader indexLoader;
+    private LemmasLoader lemmasLoader;
+    private  PageLoader pageLoader;
 
     @Autowired
     public SearchServices(SiteRepository siteRepository, PageRepository pageRepository, ResponseEntityLoader responseEntityLoader, SiteConditionsChanger siteConditionsChanger, SiteStatusChecker siteStatusChecker, IndexLoader indexLoader, LemmasLoader lemmasLoader, PageLoader pageLoader) {
@@ -40,7 +48,7 @@ public class SearchServices {
     }
 
 
-    public ResponseEntity<JSONObject> getMatchesInSite(String site, String query){
+    public ResponseEntity<Map<String, Object>> getMatchesInSite(String site, String query){
         Site targetSite = new Site();
         siteConditionsChanger.cloneSiteFromDB(targetSite, site);
         if(targetSite.getId() == 0){
@@ -78,7 +86,7 @@ public class SearchServices {
         return searchResultEntityLoader.getSearchResultJson(relevantPageLoader.getRelevantPages());
     }
 
-    public ResponseEntity<JSONObject> getMatchesInSites(String query){
+    public ResponseEntity<Map<String, Object>> getMatchesInSites(String query){
         if(!siteStatusChecker.indexedSitesExist()){
             return responseEntityLoader.getIndexedSitesNotFoundResponse();
         }

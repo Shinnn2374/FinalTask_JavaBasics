@@ -1,4 +1,4 @@
-package main.services;
+package main.services.index;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Index;
@@ -18,7 +18,7 @@ import java.util.TreeMap;
 @NoArgsConstructor
 public class Indexer {
 
-    SiteRepository siteRepository;
+    private SiteRepository siteRepository;
 
     @Autowired
     public Indexer(SiteRepository siteRepository) {

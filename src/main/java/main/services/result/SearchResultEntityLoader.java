@@ -1,5 +1,6 @@
-package main.services;
+package main.services.result;
 
+import lombok.extern.slf4j.Slf4j;
 import main.data.dto.FoundPage;
 import main.data.model.Site;
 import main.data.repository.SiteRepository;
@@ -13,9 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 
 
+@Slf4j
 public class SearchResultEntityLoader {
 
-    HashMap<Integer, Site> sites;
+    private HashMap<Integer, Site> sites;
 
     public SearchResultEntityLoader(SiteRepository siteRepository) {
         this.sites = getSitesFromDB(siteRepository);
@@ -49,7 +51,7 @@ public class SearchResultEntityLoader {
         try {
             resultJson = (JSONObject) parser.parse(result.toString());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.info("Could not parse JSON result", e);
         }
         return new ResponseEntity<>(resultJson,HttpStatus.OK);
     }

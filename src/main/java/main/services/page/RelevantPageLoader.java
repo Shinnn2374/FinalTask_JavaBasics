@@ -1,9 +1,11 @@
-package main.services;
+package main.services.page;
 
 import main.data.dto.FoundPage;
 import main.data.model.Index;
 import main.data.model.Lemma;
 import main.data.model.Page;
+import main.services.lemma.LemmFactory;
+import main.services.lemma.LemmaSortByFreqAndName;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -89,7 +91,7 @@ public class RelevantPageLoader {
         }
         HashMap<String, String> normalForm;
         LemmFactory lemmFactory = new LemmFactory(wordsList.toArray(String[]::new));
-        normalForm = lemmFactory.getLemmsToRelevantPageLoader();
+        normalForm = (HashMap<String, String>) lemmFactory.getLemmsToRelevantPageLoader();
 
         for (String textPart : cleanSplittedContent){
             String tempTextPart = textPart;

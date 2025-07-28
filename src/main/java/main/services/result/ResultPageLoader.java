@@ -1,4 +1,4 @@
-package main.services;
+package main.services.result;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Page;

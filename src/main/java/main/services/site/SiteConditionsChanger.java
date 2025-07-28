@@ -1,4 +1,4 @@
-package main.services;
+package main.services.site;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Site;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SiteConditionsChanger {
 
-    SiteRepository siteRepository;
+    private  SiteRepository siteRepository;
 
     @Autowired
     public SiteConditionsChanger(SiteRepository siteRepository) {

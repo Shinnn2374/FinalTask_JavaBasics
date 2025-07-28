@@ -1,4 +1,4 @@
-package main.services;
+package main.services.site;
 
 import lombok.NoArgsConstructor;
 import main.data.model.Site;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class SiteStatusChecker {
 
-    SiteRepository siteRepository;
+    private  SiteRepository siteRepository;
 
     @Autowired
     public SiteStatusChecker(SiteRepository siteRepository) {

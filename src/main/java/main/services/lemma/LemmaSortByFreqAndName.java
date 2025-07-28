@@ -1,4 +1,4 @@
-package main.services;
+package main.services.lemma;
 
 import main.data.model.Lemma;
 import java.util.Comparator;

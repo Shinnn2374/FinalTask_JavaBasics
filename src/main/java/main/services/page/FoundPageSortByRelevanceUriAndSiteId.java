@@ -1,4 +1,4 @@
-package main.services;
+package main.services.page;
 
 import main.data.dto.FoundPage;
 

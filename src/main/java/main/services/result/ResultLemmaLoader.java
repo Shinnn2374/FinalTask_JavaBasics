@@ -1,4 +1,4 @@
-package main.services;
+package main.services.result;
 
 import lombok.Getter;
 import main.data.model.Lemma;
@@ -8,7 +8,7 @@ import java.util.*;
 public class ResultLemmaLoader {
 
     @Getter
-    HashMap<String, Lemma> lemmaResultToDB;
+    private HashMap<String, Lemma> lemmaResultToDB;
 
     public ResultLemmaLoader(Collection<TreeMap<Lemma, Float>> lemmasResult) {
         this.lemmaResultToDB = setResultToDB(lemmasResult);
