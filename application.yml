@@ -1,0 +1,33 @@
+spring.datasource.url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf-8&engine=InnoDB
+spring.datasource.username: enter username
+spring.datasource.password: enter password
+spring.jpa.hibernate.ddl-auto: create
+started:
+  sites:
+  - url: https://nikoartgallery.com
+    name: Галерея Нико
+  - url: http://radiomv.ru
+    name: Радио Милицейская Волна
+  - url: https://www.lutherancathedral.ru
+    name: Кафедральный собор святых Петра и Павла
+  - url: https://ipfran.ru
+    name: ИПФ РАН
+  - url: http://www.playback.ru/
+    name: Интернет-магазин playback.ru
+  - url: https://dimonvideo.ru/
+    name: DimonVideo - программы | игры | фильмы | книги
+
+  field:
+    - name: title
+      selector: title
+      weight: 1.0
+    - name: body
+      selector: body
+      weight: 0.8
+
+# the maximum percentage of the appearance of the Lema from the total number of pages in the search
+lemma-frequency:
+  percent: 60
+
+user-agent:
+  name: FastSearchBot/1.0
